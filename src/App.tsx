@@ -4,6 +4,7 @@ import { useEvents, useSettings } from '@/hooks/useEvents'
 import EventCard from '@/components/EventCard'
 import EventForm from '@/components/EventForm'
 import SettingsPanel from '@/components/SettingsPanel'
+import ThemeIcon from '@/components/ThemeIcon'
 import './App.css'
 
 type Tab = 'events' | 'settings'
@@ -13,8 +14,7 @@ function applyTheme(theme: ThemeMode) {
 }
 
 const THEME_ORDER: ThemeMode[] = ['auto', 'light', 'dark']
-const THEME_LABEL: Record<ThemeMode, string> = { auto: '跟随', light: '浅色', dark: '深色' }
-const THEME_ICON: Record<ThemeMode, string> = { auto: '⌁', light: '☀︎', dark: '☾' }
+const THEME_LABEL: Record<ThemeMode, string> = { auto: '自动', light: '浅色', dark: '深色' }
 
 export default function App() {
   const { events, addEvent, updateEvent, deleteEvent } = useEvents()
@@ -40,7 +40,8 @@ export default function App() {
         <div className="app-actions">
           <button className="btn btn-secondary" onClick={nextTheme}
             title={`当前：${THEME_LABEL[settings.theme]} · 点击切换`}>
-            {THEME_ICON[settings.theme]} {THEME_LABEL[settings.theme]}
+            <ThemeIcon theme={settings.theme} size={13} />
+            {THEME_LABEL[settings.theme]}
           </button>
           <button className="btn btn-primary" onClick={() => { setEditingEvent(null); setShowForm(true) }}>
             ＋ 添加事件

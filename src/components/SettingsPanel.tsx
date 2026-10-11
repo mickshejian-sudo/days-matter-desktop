@@ -1,4 +1,5 @@
 import { AppSettings } from '@/types'
+import ThemeIcon from './ThemeIcon'
 
 interface Props {
   settings: AppSettings
@@ -11,9 +12,9 @@ const COLORS = [
 ]
 
 const THEMES = [
-  { key: 'auto' as const,  label: '跟随', icon: '⌁' },
-  { key: 'light' as const, label: '浅色', icon: '☀' },
-  { key: 'dark' as const,  label: '深色', icon: '☾' },
+  { key: 'light' as const, label: '浅色', desc: '始终使用浅色外观' },
+  { key: 'dark' as const,  label: '深色', desc: '始终使用深色外观' },
+  { key: 'auto' as const,  label: '自动', desc: '跟随系统外观自动切换' },
 ]
 
 export default function SettingsPanel({ settings, onUpdate }: Props) {
@@ -26,15 +27,15 @@ export default function SettingsPanel({ settings, onUpdate }: Props) {
           <div className="setting-item">
             <div className="setting-head">
               <h3>主题</h3>
-              <p>浅色 / 深色 / 跟随系统</p>
+              <p>浅色 / 深色 / 自动跟随系统</p>
             </div>
             <div className="theme-selector">
               {THEMES.map(t => (
                 <button key={t.key}
                   className={`theme-option ${settings.theme === t.key ? 'active' : ''}`}
                   onClick={() => onUpdate({ theme: t.key })}
-                  title={t.label}>
-                  <span className="theme-icon">{t.icon}</span>
+                  title={t.desc}>
+                  <span className="theme-icon"><ThemeIcon theme={t.key} /></span>
                   <span className="theme-label">{t.label}</span>
                 </button>
               ))}

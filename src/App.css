@@ -445,8 +445,13 @@
   font-weight: 500;
 }
 
-.theme-icon { font-size: 14px; }
-.theme-label { font-size: 12px; }
+.theme-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.theme-label { font-size: 12px; white-space: nowrap; }
 
 
 /* Windows 自绘栏窗口控制（— ▢ ✕）*/

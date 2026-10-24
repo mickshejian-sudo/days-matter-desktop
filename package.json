@@ -1,6 +1,6 @@
 {
   "name": "days-matter-desktop",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "电脑版倒数日应用 - 支持桌面小组件",
   "main": "dist-electron/main/index.js",
   "author": "Days Matter Desktop <dev@daysmatter.local>",

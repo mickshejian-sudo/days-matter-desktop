@@ -21,6 +21,8 @@ export default function EventForm({ initialEvent, defaultColor, onSubmit, onCanc
   const [color, setColor] = useState(initialEvent?.color || defaultColor)
   const [note, setNote] = useState(initialEvent?.note || '')
   const [repeat, setRepeat] = useState<DaysEvent['repeat']>(initialEvent?.repeat || 'none')
+  const [backgroundImage, setBackgroundImage] = useState(initialEvent?.backgroundImage || '')
+  const [bgPicking, setBgPicking] = useState(false)
 
   const titleRef = useRef<HTMLInputElement>(null)
   const openedAt = useRef(Date.now())
@@ -36,8 +38,26 @@ export default function EventForm({ initialEvent, defaultColor, onSubmit, onCanc
       titleRef.current?.focus()   // 无效时回焦标题框，给出可感知反馈
       return
     }
-    onSubmit({ title: title.trim(), date, time: time || undefined, type, color, note: note || undefined, repeat })
+    onSubmit({ title: title.trim(), date, time: time || undefined, type, color, note: note || undefined, repeat, backgroundImage: backgroundImage || undefined })
   }
+
+  /** 系统文件选择器选本地图片（主进程复制后返回 daysimg:// 地址） */
+  const handlePickFile = async () => {
+    setBgPicking(true)
+    try {
+      const url = await window.electronAPI?.pickBackgroundImage()
+      if (url) setBackgroundImage(url)
+    } finally {
+      setBgPicking(false)
+    }
+  }
+
+  /** 粘贴 http(s) 图片链接 */
+  const handleUrlChange = (value: string) => {
+    setBackgroundImage(value.trim())
+  }
+
+  const isHttpUrl = /^https?:\/\//i.test(backgroundImage)
 
   // 打开后 250ms 内忽略遮罩点击（防止双击「添加事件」按钮的第二下误关弹窗）
   const handleOverlayClick = () => {
@@ -100,6 +120,28 @@ export default function EventForm({ initialEvent, defaultColor, onSubmit, onCanc
             <label>备注（可选）</label>
             <input type="text" value={note} onChange={e => setNote(e.target.value)}
               placeholder="写点什么..." />
+          </div>
+
+          <div className="form-group">
+            <label>背景图片（可选）</label>
+            <div className="bg-picker-row">
+              <button type="button" className="btn btn-secondary" onClick={handlePickFile} disabled={bgPicking}>
+                {bgPicking ? '处理中...' : '选择本地图片'}
+              </button>
+              <input type="text" className="bg-url-input" value={isHttpUrl ? backgroundImage : ''}
+                onChange={e => handleUrlChange(e.target.value)}
+                placeholder="或粘贴图片链接 https://..." />
+            </div>
+            {backgroundImage && (
+              <div className="bg-preview">
+                <img src={backgroundImage} alt="背景预览"
+                  onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
+                  onLoad={(e) => { (e.target as HTMLImageElement).style.opacity = '1' }} />
+                <button type="button" className="bg-remove" onClick={() => setBackgroundImage('')}
+                  title="移除背景图">✕</button>
+                {!isHttpUrl && <span className="bg-hint">已复制到应用数据目录</span>}
+              </div>
+            )}
           </div>
 
           <div className="form-actions">

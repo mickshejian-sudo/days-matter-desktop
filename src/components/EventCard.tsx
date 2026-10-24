@@ -15,7 +15,12 @@ export default function EventCard({ event, onEdit, onDelete, onShowWidget }: Pro
 
   return (
     <div className="event-card" style={{ ['--event-color' as any]: event.color }}>
-      <div className="color-indicator" style={{ backgroundColor: event.color }} />
+      {event.backgroundImage && (
+        <img className="event-bg" src={event.backgroundImage} alt="" draggable={false}
+          onError={(e) => { (e.target as HTMLImageElement).classList.add('event-bg-error') }} />
+      )}
+      <div className="event-card-content">
+        <div className="color-indicator" style={{ backgroundColor: event.color }} />
 
       <div className="event-header">
         <div className="event-icon" style={{ backgroundColor: event.color + '22', color: event.color }}>
@@ -48,6 +53,7 @@ export default function EventCard({ event, onEdit, onDelete, onShowWidget }: Pro
         <button className="btn btn-secondary" onClick={() => onShowWidget(event)}>小组件</button>
         <button className="btn btn-secondary" onClick={() => onEdit(event)}>编辑</button>
         <button className="btn btn-danger" onClick={() => onDelete(event.id)}>删除</button>
+      </div>
       </div>
     </div>
   )

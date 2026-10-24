@@ -481,3 +481,92 @@
   background: var(--danger);
   color: white;
 }
+
+/* ===== 事件背景图 ===== */
+/* 主界面卡片：照片铺满、降低不透明度压在主题色底上，默认文字保持可读 */
+.event-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.38;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.event-bg-error { display: none; }
+.event-card-content { position: relative; z-index: 1; }
+
+/* 表单：背景图选择行 + 预览 */
+.bg-picker-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.bg-url-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-input, transparent);
+  color: var(--text-primary);
+  font-size: 12px;
+  min-width: 0;
+}
+.bg-preview {
+  position: relative;
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  max-height: 96px;
+}
+.bg-preview img {
+  display: block;
+  width: 100%; height: 96px;
+  object-fit: cover;
+  opacity: 0;
+}
+.bg-remove {
+  position: absolute; top: 6px; right: 6px;
+  width: 20px; height: 20px;
+  border: none; border-radius: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff; font-size: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.bg-remove:hover { background: rgba(0, 0, 0, 0.7); }
+.bg-hint {
+  position: absolute; left: 8px; bottom: 6px;
+  font-size: 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* ===== 事件列表搜索/排序工具栏 ===== */
+.list-toolbar {
+  display: flex; gap: 8px; align-items: center;
+  margin-bottom: 14px;
+}
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.sort-select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}

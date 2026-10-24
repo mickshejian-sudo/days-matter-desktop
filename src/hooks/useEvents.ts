@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { DaysEvent, AppSettings, DEFAULT_SETTINGS, DEFAULT_EVENTS, SEED_VERSION } from '@/types'
 import { generateId } from '@/utils/dateUtils'
 
@@ -51,9 +51,13 @@ function saveSettings(settings: AppSettings) {
 
 export function useEvents() {
   const [events, setEvents] = useState<DaysEvent[]>(loadEvents())
+  const firstRun = useRef(true)
 
   useEffect(() => {
     saveEvents(events)
+    // 首次渲染跳过：避免把刚挂载的数据覆盖到主进程快照（启动恢复期间可能还是空的）
+    if (firstRun.current) { firstRun.current = false; return }
+    window.electronAPI?.syncData({ events })
   }, [events])
 
   const addEvent = useCallback(
@@ -87,9 +91,12 @@ export function useEvents() {
 
 export function useSettings() {
   const [settings, setSettings] = useState<AppSettings>(loadSettings())
+  const firstRun = useRef(true)
 
   useEffect(() => {
     saveSettings(settings)
+    if (firstRun.current) { firstRun.current = false; return }
+    window.electronAPI?.syncData({ settings: { ...settings } })
   }, [settings])
 
   const updateSettings = useCallback((updates: Partial<AppSettings>) => {

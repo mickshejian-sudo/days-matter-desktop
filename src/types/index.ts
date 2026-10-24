@@ -12,6 +12,7 @@ export interface DaysEvent {
   icon?: string
   note?: string
   repeat?: 'none' | 'yearly' | 'monthly'
+  backgroundImage?: string // http(s):// 图片链接 或 daysimg://local/<文件名>（本地图片由主进程复制到 userData）
   createdAt: number
 }
 
@@ -21,6 +22,12 @@ export interface AppSettings {
   defaultColor: string
   showSecondaryInfo: boolean
   theme: ThemeMode
+  // ===== 新增 =====
+  reminderEnabled: boolean // 临近提醒通知
+  reminderDays: number     // 提前几天提醒（0=仅当天）
+  widgetSize: 'medium' | 'small' // 小组件尺寸档位
+  widgetOverlay: number    // 背景图遮罩浓度 0-100
+  widgetAlwaysOnTop: boolean // 小组件窗口置顶（关掉后可被其他窗口遮挡）
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -29,6 +36,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
   defaultColor: '#64D2FF',
   showSecondaryInfo: true,
   theme: 'auto',
+  reminderEnabled: true,
+  reminderDays: 1,
+  widgetSize: 'medium',
+  widgetOverlay: 45,
+  widgetAlwaysOnTop: true,
 }
 
 /** 演示数据版本号：升级默认内容时递增，用于老用户自动换新 */

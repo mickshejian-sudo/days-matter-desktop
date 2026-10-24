@@ -58,8 +58,9 @@ html, body, #widget-root {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  -webkit-app-region: drag;          /* 整卡可拖（安卓小组件手感）*/
-  transition: background 0.25s ease, color 0.25s ease;
+  /* Windows 透明窗口上 -webkit-app-region 拖拽不可靠，改由 Widget.tsx 手动 IPC 拖拽 */
+  opacity: var(--widget-opacity, 1); /* 主界面「透明度」设置 */
+  transition: background 0.25s ease, color 0.25s ease, opacity 0.15s ease;
   user-select: none;
 }
 
@@ -70,7 +71,37 @@ html, body, #widget-root {
   top: 0; left: 0;
   width: 3px; height: 100%;
   background: var(--accent-color, #0A84FF);
+  z-index: 1;
 }
+
+/* ===== 背景照片（全卡铺满 + 深色遮罩保证文字可读，文字强制白色）===== */
+.widget-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.widget-bg-error { display: none; }
+.widget.has-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    rgba(0, 0, 0, var(--bg-overlay-top, 0.25)),
+    rgba(0, 0, 0, var(--bg-overlay-bottom, 0.5)));
+  z-index: 1;
+}
+.widget.has-bg { color: #FFFFFF; }
+.widget.has-bg .widget-header,
+.widget.has-bg .widget-body { position: relative; z-index: 2; }
+.widget.has-bg .days-number,
+.widget.has-bg .widget-time { color: #FFFFFF; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55); }
+.widget.has-bg .widget-meta,
+.widget.has-bg .widget-note,
+.widget.has-bg .cycle-hint { color: rgba(255, 255, 255, 0.88); }
+.widget.has-bg .widget-close { background: rgba(255, 255, 255, 0.28); color: #FFFFFF; }
+.widget.has-bg .widget-close:hover { background: rgba(255, 255, 255, 0.42); }
 
 /* ===== 头部 ===== */
 .widget-header {
@@ -96,7 +127,6 @@ html, body, #widget-root {
   font-size: 13px; font-weight: 600;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   cursor: pointer;
-  -webkit-app-region: no-drag;       /* 可点击切换事件 */
 }
 
 .cycle-hint {
@@ -105,7 +135,6 @@ html, body, #widget-root {
 }
 
 .widget-close {
-  -webkit-app-region: no-drag;
   width: 20px; height: 20px;
   border-radius: 5px;
   background: var(--w-chip);
@@ -180,7 +209,7 @@ html, body, #widget-root {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 8px;
-  -webkit-app-region: drag;
+  opacity: var(--widget-opacity, 1);
   user-select: none;
 }
 
@@ -197,3 +226,45 @@ html, body, #widget-root {
   font-size: 12px;
   color: var(--w-sub);
 }
+
+/* ===== 小尺寸档位（240×132）：数字缩小，隐藏次要信息 ===== */
+html[data-widget-size="small"] .days-number { font-size: 32px; }
+html[data-widget-size="small"] .widget-time,
+html[data-widget-size="small"] .widget-note { display: none; }
+html[data-widget-size="small"] .widget-meta { font-size: 10px; margin-top: 2px; }
+html[data-widget-size="small"] .widget-title { font-size: 12px; }
+
+/* ===== 置顶图钉按钮（与关闭按钮同款，悬停显现）===== */
+.widget-pin {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  background: var(--w-chip);
+  color: inherit;
+  border: none;
+  font-size: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.12s, transform 0.12s;
+  flex-shrink: 0;
+  padding: 0;
+  filter: grayscale(1) opacity(0.55);
+}
+.widget:hover .widget-pin,
+.widget-pin.on { opacity: 0.75; }
+.widget-pin:hover { background: var(--w-chip-hover); opacity: 1; }
+.widget-pin.on { filter: none; }  /* 已置顶：彩色图钉常亮 */
+.widget.has-bg .widget-pin { background: rgba(255, 255, 255, 0.28); }
+.widget.has-bg .widget-pin:hover { background: rgba(255, 255, 255, 0.42); }
+
+.widget-empty-close {
+  margin-top: 4px;
+  padding: 4px 10px;
+  border: none; border-radius: 6px;
+  background: var(--w-chip);
+  color: var(--w-text);
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.widget-empty-close:hover { background: var(--w-chip-hover); opacity: 1; }

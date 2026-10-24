@@ -39,25 +39,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('days-matter-sort', sortKey) }, [sortKey])
 
   useEffect(() => { applyTheme(settings.theme) }, [settings.theme])
-
-  // 启动恢复 + 快照初始化：
-  // ① localStorage 被清空但主进程快照里还有数据 → 写回并重载
-  // ② 否则把当前数据同步给主进程，保证 data.json 从启动那一刻就存在
-  useEffect(() => {
-    window.electronAPI?.getDataSnapshot().then((snap) => {
-      const hasLocal = !!localStorage.getItem('days-matter-events')
-      if (!hasLocal && snap && Array.isArray(snap.events) && snap.events.length > 0) {
-        localStorage.setItem('days-matter-events', JSON.stringify(snap.events))
-        if (snap.settings && Object.keys(snap.settings).length > 0) {
-          localStorage.setItem('days-matter-settings', JSON.stringify(snap.settings))
-        }
-        window.location.reload()
-        return
-      }
-      window.electronAPI?.syncData({ events, settings: { ...settings } })
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // 数据恢复在 main.tsx 的 bootstrap() 里于渲染前完成
 
   // 搜索 + 排序
   const visibleEvents = useMemo(() => {
